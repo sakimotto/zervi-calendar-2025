@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            /* Light theme */
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --background-color: #f5f5f5;
-            --card-background: #ffffff;
-            --border-color: #ddd;
-            --success-bg: #d4edda;
-            --success-color: #155724;
-            --info-bg: #cce5ff;
-            --info-color: #004085;
-            --text-color: #2c3e50;
-            --sidebar-bg: #ffffff;
-            --hover-bg: #f8f9fa;
-            --shadow-color: rgba(0,0,0,0.1);
-        }
-
-        [data-theme="dark"] {
-            --primary-color: #bb86fc;
-            --secondary-color: #3700b3;
-            --background-color: #121212;
-            --card-background: #1e1e1e;
+            /* Dark theme colors from screenshot */
+            --primary-color: #8ab4f8;
+            --secondary-color: #4a4a4a;
+            --background-color: #1a1a1a;
+            --card-background: #242424;
             --border-color: #333;
             --success-bg: #1b4332;
             --success-color: #95d5b2;
@@ -37,6 +21,11 @@
             --sidebar-bg: #1e1e1e;
             --hover-bg: #2d2d2d;
             --shadow-color: rgba(0,0,0,0.3);
+            --month-header-bg: #2c3e50;
+            --calendar-bg: #1e2633;
+            --day-bg: #1a1f29;
+            --day-hover-bg: #2a2f39;
+            --holiday-text: #8ab4f8;
         }
 
         * {
@@ -55,354 +44,77 @@
             display: flex;
         }
 
-        /* Sidebar Styles */
         .sidebar {
-            width: 280px;
+            width: 250px;
             background-color: var(--sidebar-bg);
-            padding: 20px;
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            box-shadow: 2px 0 5px var(--shadow-color);
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px;
-            background-color: var(--hover-bg);
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--card-background);
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        .menu-item:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .menu-item.active {
-            background-color: var(--primary-color);
-            color: var(--card-background);
-        }
-
-        /* Sidebar Sections */
-        .sidebar-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: var(--hover-bg);
-            border-radius: 10px;
-        }
-
-        .sidebar-section h3 {
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            color: var(--text-color);
-            opacity: 0.8;
-        }
-
-        .sidebar-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .company-filter {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .company-filter label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .company-filter label:hover {
-            background-color: var(--background-color);
-        }
-
-        .company-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-        }
-
-        .company-aus {
-            background-color: var(--success-bg);
-        }
-
-        .company-thai {
-            background-color: var(--info-bg);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            margin-left: 280px;
             padding: 20px;
-            width: calc(100% - 280px);
+            border-right: 1px solid var(--border-color);
         }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: var(--card-background);
-            border-radius: 10px;
-            box-shadow: 0 2px 5px var(--shadow-color);
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .notifications {
-            position: relative;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Calendar Container Styles */
-        .calendar-container {
-            padding: 30px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: var(--background-color);
         }
 
         .calendar-title {
-            font-size: 1.8em;
             color: var(--text-color);
-            font-weight: 500;
-        }
-
-        /* Calendar Styles */
-        .month {
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: var(--card-background);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .controls {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
             gap: 10px;
+            margin-bottom: 20px;
         }
 
-        /* Button Styles */
         button {
-            padding: 8px 15px;
-            background-color: var(--primary-color);
-            color: var(--card-background);
-            border: none;
-            border-radius: 8px;
+            background-color: var(--calendar-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
         }
 
         button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-1px);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .mobile-menu-toggle {
-                display: block;
-            }
-        }
-
-        /* Keep existing calendar grid styles */
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --background-color: #f5f5f5;
-            --card-background: #ffffff;
-            --border-color: #ddd;
-            --success-bg: #d4edda;
-            --success-color: #155724;
-            --info-bg: #cce5ff;
-            --info-color: #004085;
-            --text-color: #2c3e50;
-            --sidebar-bg: #ffffff;
-            --hover-bg: #f8f9fa;
-            --shadow-color: rgba(0,0,0,0.1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--background-color);
-            min-height: 100vh;
-        }
-
-        .calendar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background-color: var(--hover-bg);
         }
 
         .month {
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
+            background-color: var(--calendar-bg);
             border-radius: 8px;
             overflow: hidden;
-            background-color: var(--card-background);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .month-navigation {
-            display: flex;
-            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .month-title {
-            background-color: var(--primary-color);
-            color: var(--card-background);
-            padding: 15px;
+            background-color: var(--month-header-bg);
+            color: var(--text-color);
+            padding: 10px;
             text-align: center;
-            font-size: 1.2em;
             font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            background-color: var(--secondary-color);
-            color: var(--card-background);
-            text-align: center;
-            font-weight: bold;
+            background-color: var(--calendar-bg);
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .weekdays div {
             padding: 10px;
-            border-right: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .weekdays div:last-child {
-            border-right: none;
+            text-align: center;
+            border-right: 1px solid var(--border-color);
         }
 
         .days {
@@ -410,47 +122,24 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             background-color: var(--border-color);
-            padding: 1px;
-            grid-auto-rows: minmax(80px, auto);
         }
 
         .day {
-            padding: 8px;
-            background-color: var(--card-background);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            height: 100%;
-            overflow: hidden;
+            background-color: var(--day-bg);
+            padding: 10px;
+            min-height: 80px;
+            color: var(--text-color);
         }
 
         .day:hover {
-            transform: scale(1.02);
-            z-index: 1;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: visible;
-        }
-
-        .today {
-            border: 2px solid var(--primary-color);
-            background-color: var(--background-color);
-        }
-
-        .holiday {
-            background-color: var(--background-color);
+            background-color: var(--day-hover-bg);
         }
 
         .holiday-label {
             font-size: 0.8em;
-            padding: 4px 6px;
-            border-radius: 3px;
-            margin-top: 2px;
-            display: block;
-            word-break: break-word;
-            line-height: 1.2;
+            padding: 4px;
+            margin-top: 4px;
+            border-radius: 2px;
         }
 
         .zervi-aus {
@@ -463,98 +152,135 @@
             color: var(--info-color);
         }
 
-        .legend {
+        .company-filter {
+            margin: 20px 0;
+        }
+
+        .company-filter label {
             display: flex;
-            gap: 15px;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: var(--background-color);
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--primary-color);
+        }
+
+        .import-export, .add-holiday {
+            background-color: var(--calendar-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        h3 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        input[type="text"], input[type="date"], select {
+            background-color: var(--day-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px;
             border-radius: 4px;
-            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        /* Event Categories */
+        .event-trade-show {
+            background-color: #553c9a;
+            color: #e9d8fd;
+        }
+
+        .event-company {
+            background-color: #702459;
+            color: #fed7e2;
+        }
+
+        .event-travel {
+            background-color: #2c5282;
+            color: #bee3f8;
+        }
+
+        .event-product {
+            background-color: #2f855a;
+            color: #c6f6d5;
+        }
+
+        /* Category Selection */
+        .category-select {
+            background-color: var(--day-bg);
+            color: var(--text-color);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        /* Event Legend */
+        .event-legend {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--calendar-bg);
+            border-radius: 8px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            background-color: var(--card-background);
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* Menu items */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--hover-bg);
+        }
+
+        .menu-item i {
             width: 20px;
-            height: 20px;
-            border-radius: 4px;
         }
 
-        .export-import, .add-holiday {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: var(--background-color);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+        /* User profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        button {
-            padding: 8px 15px;
-            background-color: var(--primary-color);
-            color: var(--card-background);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-weight: 500;
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
-        }
-
-        input[type="text"], input[type="date"], select {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-right: 10px;
-            font-size: 14px;
-            background-color: var(--card-background);
-        }
-
-        input[type="text"]:focus, input[type="date"]:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .calendar-container {
-                padding: 10px;
-            }
-            .days {
-                grid-auto-rows: minmax(60px, auto);
-            }
-            .day {
-                padding: 4px;
-                font-size: 0.9em;
-            }
-            .holiday-label {
-                font-size: 0.7em;
-                padding: 2px 4px;
-            }
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-            .month-navigation {
-                justify-content: space-between;
-            }
-            .company-filter {
-                justify-content: flex-start;
-            }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--hover-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
@@ -662,6 +388,62 @@
                 </button>
             </div>
         </div>
+
+        <!-- Event Categories Section -->
+        <div class="sidebar-section">
+            <h3>Event Categories</h3>
+            <div class="event-legend">
+                <div class="legend-item">
+                    <span class="legend-color zervi-aus"></span>
+                    <span>Australia Holidays</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color zervi-thai"></span>
+                    <span>Thailand Holidays</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color event-trade-show"></span>
+                    <span>Trade Shows</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color event-company"></span>
+                    <span>Company Events</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color event-travel"></span>
+                    <span>Business Travel</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color event-product"></span>
+                    <span>Product Launches</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Event Section -->
+        <div class="sidebar-section">
+            <h3>Add Event</h3>
+            <div class="sidebar-controls">
+                <input type="date" id="eventDate" min="2025-01-01" max="2025-12-31">
+                <input type="text" id="eventName" placeholder="Event Name">
+                <select id="eventCompany" class="category-select">
+                    <option value="aus">Zervi Australia</option>
+                    <option value="thai">Zervi Thailand</option>
+                    <option value="both">Both Companies</option>
+                </select>
+                <select id="eventCategory" class="category-select">
+                    <option value="holiday">Holiday</option>
+                    <option value="trade-show">Trade Show</option>
+                    <option value="company">Company Event</option>
+                    <option value="travel">Business Travel</option>
+                    <option value="product">Product Launch</option>
+                </select>
+                <button onclick="addEvent()">
+                    <i class="fas fa-plus"></i>
+                    Add Event
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -693,112 +475,148 @@
 
     <script>
         const holidays = {
-            aus: {
-                '2025-01-01': "New Year's Day",
-                '2025-01-26': "Australia Day",
-                '2025-04-25': "ANZAC Day",
-                '2025-12-25': "Christmas Day",
-                '2025-12-26': "Boxing Day"
-            },
-            thai: {
-                '2025-01-01': "New Year's Day",
-                '2025-04-13': "Songkran Festival",
-                '2025-04-14': "Songkran Festival",
-                '2025-04-15': "Songkran Festival",
-                '2025-12-05': "Father's Day",
-                '2025-12-10': "Constitution Day",
-                '2025-12-31': "New Year's Eve"
-            }
+            thai: [
+                { date: '2025-01-01', name: "New Year's Day 2025", category: 'holiday' },
+                { date: '2025-01-02', name: "New Year's Day 2025", category: 'holiday' },
+                { date: '2025-04-14', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-04-15', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-04-16', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-04-17', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-04-18', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-04-19', name: "Songkran Festival Day", category: 'holiday' },
+                { date: '2025-05-01', name: "National Labor Day", category: 'holiday' },
+                { date: '2025-05-12', name: "Visakha Bucha Day", category: 'holiday' },
+                { date: '2025-06-03', name: "H.M. The Queen's Birthday", category: 'holiday' },
+                { date: '2025-07-28', name: "H.M. The King's Birthday", category: 'holiday' },
+                { date: '2025-08-12', name: "Mother's Day", category: 'holiday' },
+                { date: '2025-10-13', name: "King Bhumibol Adulyadej Memorial Day", category: 'holiday' },
+                { date: '2025-12-05', name: "Father's Day", category: 'holiday' },
+                { date: '2025-12-26', name: "Christmas Day Vacation Management", category: 'holiday' },
+                { date: '2025-12-27', name: "Christmas Day Vacation Management", category: 'holiday' },
+                { date: '2025-12-29', name: "Christmas Day Vacation Management", category: 'holiday' },
+                { date: '2025-12-30', name: "Christmas Day Vacation Management", category: 'holiday' },
+                { date: '2025-12-31', name: "New Year's 2025", category: 'holiday' }
+            ],
+            aus: [
+                { date: '2025-01-26', name: "Australia Day", category: 'holiday' }
+                // Add more Australian holidays here
+            ]
         };
 
         let currentMonth = new Date().getMonth();
         let showAllMonths = true;
 
+        const eventTypes = {
+            holiday: { aus: 'zervi-aus', thai: 'zervi-thai' },
+            'trade-show': 'event-trade-show',
+            company: 'event-company',
+            travel: 'event-travel',
+            product: 'event-product'
+        };
+
+        function renderEvents(dayDiv, currentDate) {
+            const holidayContainer = document.createElement('div');
+            holidayContainer.style.display = 'flex';
+            holidayContainer.style.flexDirection = 'column';
+            holidayContainer.style.gap = '2px';
+
+            // Render Thai events
+            if (document.getElementById('showThai').checked) {
+                holidays.thai.forEach(event => {
+                    if (event.date === currentDate) {
+                        const eventDiv = document.createElement('div');
+                        let className = 'holiday-label ';
+                        
+                        // Apply appropriate class based on event category
+                        if (event.category === 'holiday') {
+                            className += 'zervi-thai';
+                        } else {
+                            className += `event-${event.category}`;
+                        }
+                        
+                        eventDiv.className = className;
+                        eventDiv.textContent = event.name;
+                        holidayContainer.appendChild(eventDiv);
+                        dayDiv.classList.add('holiday');
+                    }
+                });
+            }
+
+            // Render Australian events
+            if (document.getElementById('showAus').checked) {
+                holidays.aus.forEach(event => {
+                    if (event.date === currentDate) {
+                        const eventDiv = document.createElement('div');
+                        let className = 'holiday-label ';
+                        
+                        // Apply appropriate class based on event category
+                        if (event.category === 'holiday') {
+                            className += 'zervi-aus';
+                        } else {
+                            className += `event-${event.category}`;
+                        }
+                        
+                        eventDiv.className = className;
+                        eventDiv.textContent = event.name;
+                        holidayContainer.appendChild(eventDiv);
+                        dayDiv.classList.add('holiday');
+                    }
+                });
+            }
+
+            if (holidayContainer.children.length > 0) {
+                dayDiv.appendChild(holidayContainer);
+            }
+        }
+
         function createCalendar() {
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
 
-            const months = showAllMonths ? [...Array(12).keys()] : [currentMonth];
-
+            const months = showAllMonths ? [0,1,2,3,4,5,6,7,8,9,10,11] : [currentMonth];
+            
             months.forEach(month => {
                 const monthDiv = document.createElement('div');
                 monthDiv.className = 'month';
-
+                
                 const monthTitle = document.createElement('div');
                 monthTitle.className = 'month-title';
                 monthTitle.textContent = new Date(2025, month, 1).toLocaleString('default', { month: 'long' });
                 monthDiv.appendChild(monthTitle);
 
-                const weekdays = document.createElement('div');
-                weekdays.className = 'weekdays';
+                const weekdaysDiv = document.createElement('div');
+                weekdaysDiv.className = 'weekdays';
                 ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
                     const dayDiv = document.createElement('div');
                     dayDiv.textContent = day;
-                    weekdays.appendChild(dayDiv);
+                    weekdaysDiv.appendChild(dayDiv);
                 });
-                monthDiv.appendChild(weekdays);
+                monthDiv.appendChild(weekdaysDiv);
 
                 const daysDiv = document.createElement('div');
                 daysDiv.className = 'days';
 
                 const firstDay = new Date(2025, month, 1);
                 const lastDay = new Date(2025, month + 1, 0);
-                const totalDays = firstDay.getDay() + lastDay.getDate();
-                const totalCells = Math.ceil(totalDays / 7) * 7;
+                const daysInMonth = lastDay.getDate();
 
-                // Add empty cells for days before the first day of the month
+                // Add empty cells for days before the first of the month
                 for (let i = 0; i < firstDay.getDay(); i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day';
                     daysDiv.appendChild(emptyDay);
                 }
 
-                // Add the actual days
-                for (let day = 1; day <= lastDay.getDate(); day++) {
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
                     const dayDiv = document.createElement('div');
                     dayDiv.className = 'day';
-                    
-                    const dateSpan = document.createElement('span');
-                    dateSpan.textContent = day;
-                    dayDiv.appendChild(dateSpan);
-
-                    const today = new Date();
-                    if (today.getFullYear() === 2025 && today.getMonth() === month && today.getDate() === day) {
-                        dayDiv.classList.add('today');
-                    }
+                    dayDiv.innerHTML = `<span>${day}</span>`;
 
                     const currentDate = `2025-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const holidayContainer = document.createElement('div');
-                    holidayContainer.style.display = 'flex';
-                    holidayContainer.style.flexDirection = 'column';
-                    holidayContainer.style.gap = '2px';
+                    renderEvents(dayDiv, currentDate);
 
-                    if (holidays.aus[currentDate] && document.getElementById('showAus').checked) {
-                        const holiday = document.createElement('div');
-                        holiday.className = 'holiday-label zervi-aus';
-                        holiday.textContent = holidays.aus[currentDate];
-                        holidayContainer.appendChild(holiday);
-                        dayDiv.classList.add('holiday');
-                    }
-
-                    if (holidays.thai[currentDate] && document.getElementById('showThai').checked) {
-                        const holiday = document.createElement('div');
-                        holiday.className = 'holiday-label zervi-thai';
-                        holiday.textContent = holidays.thai[currentDate];
-                        holidayContainer.appendChild(holiday);
-                        dayDiv.classList.add('holiday');
-                    }
-
-                    dayDiv.appendChild(holidayContainer);
                     daysDiv.appendChild(dayDiv);
-                }
-
-                // Add empty cells for days after the last day of the month
-                const remainingCells = totalCells - (firstDay.getDay() + lastDay.getDate());
-                for (let i = 0; i < remainingCells; i++) {
-                    const emptyDay = document.createElement('div');
-                    emptyDay.className = 'day';
-                    daysDiv.appendChild(emptyDay);
                 }
 
                 monthDiv.appendChild(daysDiv);
@@ -844,14 +662,14 @@
                 const rows = [['Date', 'Holiday Name', 'Company']];
                 
                 if (showAus) {
-                    Object.entries(holidays.aus).forEach(([date, name]) => {
-                        rows.push([date, name, 'Zervi Australia']);
+                    holidays.aus.forEach(holiday => {
+                        rows.push([holiday.date, holiday.name, 'Zervi Australia']);
                     });
                 }
                 
                 if (showThai) {
-                    Object.entries(holidays.thai).forEach(([date, name]) => {
-                        rows.push([date, name, 'Zervi Thailand']);
+                    holidays.thai.forEach(holiday => {
+                        rows.push([holiday.date, holiday.name, 'Zervi Thailand']);
                     });
                 }
                 
@@ -901,11 +719,54 @@
                 return;
             }
 
-            holidays[company][date] = name;
+            const event = {
+                date,
+                name,
+                category: 'holiday',
+                company
+            };
+
+            if (company === 'aus') {
+                holidays.aus.push(event);
+            } else if (company === 'thai') {
+                holidays.thai.push(event);
+            }
             createCalendar();
             
             document.getElementById('holidayDate').value = '';
             document.getElementById('holidayName').value = '';
+        }
+
+        function addEvent() {
+            const date = document.getElementById('eventDate').value;
+            const name = document.getElementById('eventName').value;
+            const company = document.getElementById('eventCompany').value;
+            const category = document.getElementById('eventCategory').value;
+
+            if (!date || !name) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const event = {
+                date,
+                name,
+                category,
+                company
+            };
+
+            if (company === 'both') {
+                holidays.aus.push(event);
+                holidays.thai.push(event);
+            } else {
+                holidays[company].push(event);
+            }
+
+            createCalendar();
+            
+            // Clear form
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventName').value = '';
         }
 
         document.getElementById('importFile').addEventListener('change', importHolidays);
@@ -933,10 +794,10 @@
         });
 
         // Simulate notifications
-        const upcomingHolidays = Object.entries(holidays.aus)
-            .concat(Object.entries(holidays.thai))
-            .filter(([date]) => {
-                const holidayDate = new Date(date);
+        const upcomingHolidays = holidays.thai
+            .concat(holidays.aus)
+            .filter(holiday => {
+                const holidayDate = new Date(holiday.date);
                 const today = new Date();
                 const diffTime = holidayDate - today;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
