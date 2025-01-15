@@ -1074,34 +1074,46 @@
                 <h3>Event Details</h3>
                 <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
             </div>
-            <div class="event-details">
-                <div class="detail-row">
-                    <strong>Date:</strong>
-                    <span id="detailDate"></span>
+            <div class="modal-form view-only">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="detailDate" disabled>
                 </div>
-                <div class="detail-row">
-                    <strong>Name:</strong>
-                    <span id="detailName"></span>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="detailName" disabled>
                 </div>
-                <div class="detail-row">
-                    <strong>Category:</strong>
-                    <span id="detailCategory"></span>
+                <div class="form-group">
+                    <label>Company</label>
+                    <select id="detailCompany" class="category-select" disabled>
+                        <option value="aus">Zervi Australia</option>
+                        <option value="thai">Zervi Thailand</option>
+                        <option value="both">Both Companies</option>
+                    </select>
                 </div>
-                <div class="detail-row">
-                    <strong>Company:</strong>
-                    <span id="detailCompany"></span>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="detailCategory" class="category-select" disabled>
+                        <option value="holiday">Holiday</option>
+                        <option value="trade-show">Trade Show</option>
+                        <option value="company">Company Event</option>
+                        <option value="travel">Business Travel</option>
+                        <option value="product">Product Launch</option>
+                    </select>
                 </div>
-                <div class="detail-row">
-                    <strong>Description:</strong>
-                    <p id="detailDescription" class="detail-description"></p>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="detailDescription" rows="3" disabled></textarea>
                 </div>
-                <div class="detail-row">
-                    <strong>Created:</strong>
-                    <span id="detailCreated"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>Last Modified:</strong>
-                    <span id="detailModified"></span>
+                <div class="form-group metadata">
+                    <div>
+                        <label>Created</label>
+                        <input type="text" id="detailCreated" disabled>
+                    </div>
+                    <div>
+                        <label>Last Modified</label>
+                        <input type="text" id="detailModified" disabled>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1116,25 +1128,30 @@
     </div>
 
     <style>
-        .event-details {
-            padding: 20px 0;
-        }
-        
-        .detail-row {
+        .form-group {
             margin-bottom: 15px;
         }
-        
-        .detail-row strong {
-            display: inline-block;
-            width: 120px;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
             color: var(--primary-color);
+            font-size: 0.9em;
         }
-        
-        .detail-description {
-            margin-top: 5px;
-            white-space: pre-wrap;
-            color: var(--text-color);
-            opacity: 0.9;
+
+        .form-group.metadata {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .view-only input[disabled],
+        .view-only select[disabled],
+        .view-only textarea[disabled] {
+            background-color: var(--day-bg);
+            border-color: var(--border-color);
+            opacity: 0.8;
+            cursor: default;
         }
 
         .modal-footer {
@@ -1177,18 +1194,17 @@
             });
             
             // Update modal content
-            document.getElementById('detailDate').textContent = formattedDate;
-            document.getElementById('detailName').textContent = event.name;
-            document.getElementById('detailCategory').textContent = 
-                event.category.charAt(0).toUpperCase() + event.category.slice(1);
-            document.getElementById('detailCompany').textContent = 
-                company === 'aus' ? 'Zervi Australia' : 'Zervi Thailand';
-            document.getElementById('detailDescription').textContent = 
-                event.description || 'No description provided';
-            document.getElementById('detailCreated').textContent = 
-                event.created || 'Not available';
-            document.getElementById('detailModified').textContent = 
-                event.modified || 'Not available';
+            document.getElementById('detailDate').value = event.date;
+            document.getElementById('detailName').value = event.name;
+            document.getElementById('detailCategory').value = event.category;
+            document.getElementById('detailCompany').value = 
+                event.company || company;
+            document.getElementById('detailDescription').value = 
+                event.description || '';
+            document.getElementById('detailCreated').value = 
+                formatDateTime(event.created) || 'Not available';
+            document.getElementById('detailModified').value = 
+                formatDateTime(event.modified) || 'Not available';
             
             // Show modal
             document.getElementById('eventDetailsModal').classList.add('active');
@@ -1288,6 +1304,21 @@
             // Close modal
             closeEditModal();
         };
+    </script>
+
+    <script>
+        // Helper function to format date-time
+        function formatDateTime(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
     </script>
 </body>
 </html>
