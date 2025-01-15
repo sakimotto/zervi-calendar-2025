@@ -97,24 +97,27 @@
             gap: 1px;
             background-color: var(--border-color);
             padding: 1px;
+            grid-auto-rows: minmax(80px, auto);
         }
 
         .day {
-            padding: 10px;
-            min-height: 80px;
+            padding: 8px;
             background-color: var(--card-background);
             border: 1px solid var(--border-color);
             transition: transform 0.2s;
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
+            height: 100%;
+            overflow: hidden;
         }
 
         .day:hover {
             transform: scale(1.02);
             z-index: 1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: visible;
         }
 
         .today {
@@ -128,10 +131,12 @@
 
         .holiday-label {
             font-size: 0.8em;
-            padding: 3px 6px;
+            padding: 4px 6px;
             border-radius: 3px;
-            margin-top: auto;
+            margin-top: 2px;
             display: block;
+            word-break: break-word;
+            line-height: 1.2;
         }
 
         .zervi-aus {
@@ -241,12 +246,11 @@
                 padding: 10px;
             }
             .days {
-                gap: 0;
+                grid-auto-rows: minmax(60px, auto);
             }
             .day {
-                min-height: 60px;
+                padding: 4px;
                 font-size: 0.9em;
-                padding: 5px;
             }
             .holiday-label {
                 font-size: 0.7em;
@@ -255,12 +259,13 @@
             .controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 15px;
             }
             .month-navigation {
-                justify-content: center;
+                justify-content: space-between;
             }
             .company-filter {
-                justify-content: center;
+                justify-content: flex-start;
             }
         }
     </style>
@@ -272,7 +277,7 @@
         <div class="controls">
             <div class="month-navigation">
                 <button onclick="previousMonth()">Previous</button>
-                <button onclick="showAllMonths()">Show All</button>
+                <button onclick="toggleAllMonths()">Show All Months</button>
                 <button onclick="nextMonth()">Next</button>
             </div>
 
@@ -366,31 +371,41 @@
 
                 const firstDay = new Date(2025, month, 1);
                 const lastDay = new Date(2025, month + 1, 0);
+                const totalDays = firstDay.getDay() + lastDay.getDate();
+                const totalCells = Math.ceil(totalDays / 7) * 7;
 
+                // Add empty cells for days before the first day of the month
                 for (let i = 0; i < firstDay.getDay(); i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day';
                     daysDiv.appendChild(emptyDay);
                 }
 
+                // Add the actual days
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const dayDiv = document.createElement('div');
                     dayDiv.className = 'day';
                     
+                    const dateSpan = document.createElement('span');
+                    dateSpan.textContent = day;
+                    dayDiv.appendChild(dateSpan);
+
                     const today = new Date();
                     if (today.getFullYear() === 2025 && today.getMonth() === month && today.getDate() === day) {
                         dayDiv.classList.add('today');
                     }
-                    
-                    dayDiv.textContent = day;
 
                     const currentDate = `2025-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const holidayContainer = document.createElement('div');
+                    holidayContainer.style.display = 'flex';
+                    holidayContainer.style.flexDirection = 'column';
+                    holidayContainer.style.gap = '2px';
 
                     if (holidays.aus[currentDate] && document.getElementById('showAus').checked) {
                         const holiday = document.createElement('div');
                         holiday.className = 'holiday-label zervi-aus';
                         holiday.textContent = holidays.aus[currentDate];
-                        dayDiv.appendChild(holiday);
+                        holidayContainer.appendChild(holiday);
                         dayDiv.classList.add('holiday');
                     }
 
@@ -398,11 +413,20 @@
                         const holiday = document.createElement('div');
                         holiday.className = 'holiday-label zervi-thai';
                         holiday.textContent = holidays.thai[currentDate];
-                        dayDiv.appendChild(holiday);
+                        holidayContainer.appendChild(holiday);
                         dayDiv.classList.add('holiday');
                     }
 
+                    dayDiv.appendChild(holidayContainer);
                     daysDiv.appendChild(dayDiv);
+                }
+
+                // Add empty cells for days after the last day of the month
+                const remainingCells = totalCells - (firstDay.getDay() + lastDay.getDate());
+                for (let i = 0; i < remainingCells; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'day';
+                    daysDiv.appendChild(emptyDay);
                 }
 
                 monthDiv.appendChild(daysDiv);
@@ -411,20 +435,24 @@
         }
 
         function previousMonth() {
-            currentMonth = (currentMonth - 1 + 12) % 12;
-            showAllMonths = false;
-            createCalendar();
+            if (!showAllMonths) {
+                currentMonth = (currentMonth - 1 + 12) % 12;
+                createCalendar();
+            }
         }
 
         function nextMonth() {
-            currentMonth = (currentMonth + 1) % 12;
-            showAllMonths = false;
-            createCalendar();
+            if (!showAllMonths) {
+                currentMonth = (currentMonth + 1) % 12;
+                createCalendar();
+            }
         }
 
-        function showAllMonths() {
-            showAllMonths = true;
+        function toggleAllMonths() {
+            showAllMonths = !showAllMonths;
             createCalendar();
+            const button = document.querySelector('button:nth-child(2)');
+            button.textContent = showAllMonths ? 'Show Current Month' : 'Show All Months';
         }
 
         function exportHolidays() {
