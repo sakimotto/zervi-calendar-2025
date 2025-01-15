@@ -656,6 +656,9 @@
                                 <button onclick="editEvent('${event.date}', 'thai', ${holidays.thai.indexOf(event)})">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                <button onclick="deleteEvent('${event.date}', 'thai', ${holidays.thai.indexOf(event)})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         `;
                         holidayContainer.appendChild(eventDiv);
@@ -684,6 +687,9 @@
                             <div class="event-actions">
                                 <button onclick="editEvent('${event.date}', 'aus', ${holidays.aus.indexOf(event)})">
                                     <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteEvent('${event.date}', 'aus', ${holidays.aus.indexOf(event)})">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         `;
@@ -1029,6 +1035,30 @@
                 closeEditModal();
             }
         });
+    </script>
+
+    <script>
+        function deleteEvent(date, company, index) {
+            const event = holidays[company][index];
+            if (confirm(`Are you sure you want to delete "${event.name}" on ${date}?`)) {
+                // Remove the event
+                holidays[company].splice(index, 1);
+                
+                // If it was a "both" company event, remove from other company too
+                if (event.company === 'both') {
+                    const otherCompany = company === 'aus' ? 'thai' : 'aus';
+                    const otherIndex = holidays[otherCompany].findIndex(e => 
+                        e.date === event.date && e.name === event.name
+                    );
+                    if (otherIndex !== -1) {
+                        holidays[otherCompany].splice(otherIndex, 1);
+                    }
+                }
+                
+                // Refresh calendar
+                createCalendar();
+            }
+        }
     </script>
 </body>
 </html>
