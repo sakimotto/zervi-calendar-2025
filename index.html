@@ -653,6 +653,9 @@
                         eventDiv.innerHTML = `
                             <span>${event.name}</span>
                             <div class="event-actions">
+                                <button onclick="viewEvent('${event.date}', 'thai', ${holidays.thai.indexOf(event)})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button onclick="editEvent('${event.date}', 'thai', ${holidays.thai.indexOf(event)})">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -685,6 +688,9 @@
                         eventDiv.innerHTML = `
                             <span>${event.name}</span>
                             <div class="event-actions">
+                                <button onclick="viewEvent('${event.date}', 'aus', ${holidays.aus.indexOf(event)})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button onclick="editEvent('${event.date}', 'aus', ${holidays.aus.indexOf(event)})">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -1059,6 +1065,229 @@
                 createCalendar();
             }
         }
+    </script>
+
+    <!-- Event Details Modal -->
+    <div class="modal" id="eventDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Event Details</h3>
+                <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="event-details">
+                <div class="detail-row">
+                    <strong>Date:</strong>
+                    <span id="detailDate"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Name:</strong>
+                    <span id="detailName"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Category:</strong>
+                    <span id="detailCategory"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Company:</strong>
+                    <span id="detailCompany"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Description:</strong>
+                    <p id="detailDescription" class="detail-description"></p>
+                </div>
+                <div class="detail-row">
+                    <strong>Created:</strong>
+                    <span id="detailCreated"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Last Modified:</strong>
+                    <span id="detailModified"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="editEventFromDetails()" class="action-button">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button onclick="deleteEventFromDetails()" class="action-button delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .event-details {
+            padding: 20px 0;
+        }
+        
+        .detail-row {
+            margin-bottom: 15px;
+        }
+        
+        .detail-row strong {
+            display: inline-block;
+            width: 120px;
+            color: var(--primary-color);
+        }
+        
+        .detail-description {
+            margin-top: 5px;
+            white-space: pre-wrap;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-button.delete {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .action-button.delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+
+    <script>
+        let currentViewingEvent = null;
+
+        function viewEvent(date, company, index) {
+            const event = holidays[company][index];
+            currentViewingEvent = { date, company, index };
+            
+            // Format date for display
+            const eventDate = new Date(date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Update modal content
+            document.getElementById('detailDate').textContent = formattedDate;
+            document.getElementById('detailName').textContent = event.name;
+            document.getElementById('detailCategory').textContent = 
+                event.category.charAt(0).toUpperCase() + event.category.slice(1);
+            document.getElementById('detailCompany').textContent = 
+                company === 'aus' ? 'Zervi Australia' : 'Zervi Thailand';
+            document.getElementById('detailDescription').textContent = 
+                event.description || 'No description provided';
+            document.getElementById('detailCreated').textContent = 
+                event.created || 'Not available';
+            document.getElementById('detailModified').textContent = 
+                event.modified || 'Not available';
+            
+            // Show modal
+            document.getElementById('eventDetailsModal').classList.add('active');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('eventDetailsModal').classList.remove('active');
+            currentViewingEvent = null;
+        }
+
+        function editEventFromDetails() {
+            if (currentViewingEvent) {
+                editEvent(
+                    currentViewingEvent.date,
+                    currentViewingEvent.company,
+                    currentViewingEvent.index
+                );
+                closeDetailsModal();
+            }
+        }
+
+        function deleteEventFromDetails() {
+            if (currentViewingEvent) {
+                deleteEvent(
+                    currentViewingEvent.date,
+                    currentViewingEvent.company,
+                    currentViewingEvent.index
+                );
+                closeDetailsModal();
+            }
+        }
+
+        // Update addEvent to include metadata
+        const originalAddEvent = addEvent;
+        addEvent = function() {
+            const now = new Date().toISOString();
+            const event = {
+                date: document.getElementById('eventDate').value,
+                name: document.getElementById('eventName').value,
+                company: document.getElementById('eventCompany').value,
+                category: document.getElementById('eventCategory').value,
+                description: document.getElementById('eventDescription').value,
+                created: now,
+                modified: now
+            };
+
+            if (!event.date || !event.name) {
+                alert('Please fill in required fields (Date and Name)');
+                return;
+            }
+
+            if (event.company === 'both') {
+                holidays.aus.push({...event});
+                holidays.thai.push({...event});
+            } else {
+                holidays[event.company].push(event);
+            }
+
+            createCalendar();
+            
+            // Clear form
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDescription').value = '';
+
+            // Close the dropdown
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.classList.remove('active');
+        };
+
+        // Update updateEvent to include metadata
+        const originalUpdateEvent = updateEvent;
+        updateEvent = function() {
+            const index = parseInt(document.getElementById('editEventIndex').value);
+            const company = document.getElementById('editEventCompany').value;
+            
+            const updatedEvent = {
+                date: document.getElementById('editEventDate').value,
+                name: document.getElementById('editEventName').value,
+                category: document.getElementById('editEventCategory').value,
+                description: document.getElementById('editEventDescription').value,
+                created: holidays[company][index].created || new Date().toISOString(),
+                modified: new Date().toISOString()
+            };
+
+            if (!updatedEvent.date || !updatedEvent.name) {
+                alert('Please fill in required fields (Date and Name)');
+                return;
+            }
+
+            // Update event
+            holidays[company][index] = updatedEvent;
+            
+            // Refresh calendar
+            createCalendar();
+            
+            // Close modal
+            closeEditModal();
+        };
     </script>
 </body>
 </html>
