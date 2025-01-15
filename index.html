@@ -124,6 +124,63 @@
             color: var(--card-background);
         }
 
+        /* Sidebar Sections */
+        .sidebar-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--hover-bg);
+            border-radius: 10px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .sidebar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .company-filter {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .company-filter label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .company-filter label:hover {
+            background-color: var(--background-color);
+        }
+
+        .company-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .company-aus {
+            background-color: var(--success-bg);
+        }
+
+        .company-thai {
+            background-color: var(--info-bg);
+        }
+
         /* Main Content Styles */
         .main-content {
             margin-left: 280px;
@@ -181,13 +238,23 @@
 
         /* Calendar Container Styles */
         .calendar-container {
-            background-color: var(--card-background);
-            border-radius: 10px;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            padding: 20px;
+            padding: 30px;
         }
 
-        /* Existing calendar styles with updated colors */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-title {
+            font-size: 1.8em;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        /* Calendar Styles */
         .month {
             margin-bottom: 30px;
             border: 1px solid var(--border-color);
@@ -459,32 +526,6 @@
             box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
         }
 
-        .company-filter {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .company-filter label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            color: var(--primary-color);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -535,24 +576,91 @@
             </div>
         </div>
 
-        <div class="sidebar-menu">
-            <a href="#" class="menu-item active">
-                <i class="fas fa-calendar"></i>
-                Calendar View
-            </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-clock"></i>
-                Upcoming Holidays
-            </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-building"></i>
-                Companies
-                <span style="margin-left: auto; font-size: 0.8em; opacity: 0.7;">2</span>
-            </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
+        <!-- Navigation Menu -->
+        <div class="sidebar-section">
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-calendar"></i>
+                    Calendar View
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-clock"></i>
+                    Upcoming Holidays
+                </a>
+            </div>
+        </div>
+
+        <!-- Calendar Controls -->
+        <div class="sidebar-section">
+            <h3>Calendar Controls</h3>
+            <div class="sidebar-controls">
+                <button onclick="previousMonth()">
+                    <i class="fas fa-chevron-left"></i>
+                    Previous
+                </button>
+                <button onclick="toggleAllMonths()">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="viewToggleText">Show All Months</span>
+                </button>
+                <button onclick="nextMonth()">
+                    <i class="fas fa-chevron-right"></i>
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <!-- Company Filters -->
+        <div class="sidebar-section">
+            <h3>Companies</h3>
+            <div class="company-filter">
+                <label>
+                    <input type="checkbox" checked id="showAus">
+                    <span class="company-indicator company-aus"></span>
+                    Zervi Australia
+                </label>
+                <label>
+                    <input type="checkbox" checked id="showThai">
+                    <span class="company-indicator company-thai"></span>
+                    Zervi Thailand
+                </label>
+            </div>
+        </div>
+
+        <!-- Import/Export -->
+        <div class="sidebar-section">
+            <h3>Data Management</h3>
+            <div class="sidebar-controls">
+                <button onclick="exportHolidays('json')">
+                    <i class="fas fa-file-export"></i>
+                    Export JSON
+                </button>
+                <button onclick="exportHolidays('csv')">
+                    <i class="fas fa-file-csv"></i>
+                    Export CSV
+                </button>
+                <button onclick="document.getElementById('importFile').click()">
+                    <i class="fas fa-file-import"></i>
+                    Import Holidays
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Add Holiday -->
+        <div class="sidebar-section">
+            <h3>Add Holiday</h3>
+            <div class="sidebar-controls">
+                <input type="date" id="holidayDate" min="2025-01-01" max="2025-12-31">
+                <input type="text" id="holidayName" placeholder="Holiday Name">
+                <select id="holidayCompany">
+                    <option value="aus">Zervi Australia</option>
+                    <option value="thai">Zervi Thailand</option>
+                </select>
+                <button onclick="addCustomHoliday()">
+                    <i class="fas fa-plus"></i>
+                    Add Holiday
+                </button>
+            </div>
         </div>
     </div>
 
@@ -576,51 +684,9 @@
         </div>
 
         <div class="calendar-container">
-            <h1>Zervi Companies Calendar 2025</h1>
-
-            <div class="controls">
-                <div class="month-navigation">
-                    <button onclick="previousMonth()">Previous</button>
-                    <button onclick="toggleAllMonths()">Show All Months</button>
-                    <button onclick="nextMonth()">Next</button>
-                </div>
-
-                <div class="company-filter">
-                    <label><input type="checkbox" checked id="showAus"> Show Zervi Australia Holidays</label>
-                    <label><input type="checkbox" checked id="showThai"> Show Zervi Thailand Holidays</label>
-                </div>
+            <div class="calendar-header">
+                <h1 class="calendar-title">Zervi Companies Calendar 2025</h1>
             </div>
-
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: var(--success-bg);"></div>
-                    <span>Zervi Australia</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: var(--info-bg);"></div>
-                    <span>Zervi Thailand</span>
-                </div>
-            </div>
-
-            <div class="export-import">
-                <h3>Import/Export Holidays</h3>
-                <button onclick="exportHolidays('json')">Export as JSON</button>
-                <button onclick="exportHolidays('csv')">Export as CSV</button>
-                <input type="file" id="importFile" accept=".json" style="display: none;">
-                <button onclick="document.getElementById('importFile').click()">Import Holidays</button>
-            </div>
-
-            <div class="add-holiday">
-                <h3>Add Custom Holiday</h3>
-                <input type="date" id="holidayDate" min="2025-01-01" max="2025-12-31">
-                <input type="text" id="holidayName" placeholder="Holiday Name">
-                <select id="holidayCompany">
-                    <option value="aus">Zervi Australia</option>
-                    <option value="thai">Zervi Thailand</option>
-                </select>
-                <button onclick="addCustomHoliday()">Add Holiday</button>
-            </div>
-
             <div id="calendar"></div>
         </div>
     </div>
