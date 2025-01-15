@@ -24,6 +24,7 @@
             border-radius: 8px;
             overflow: hidden;
             background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .controls {
             display: flex;
@@ -40,6 +41,7 @@
             text-align: center;
             font-size: 1.2em;
             font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .weekdays {
             display: grid;
@@ -48,16 +50,22 @@
             color: white;
             text-align: center;
             font-weight: bold;
+            border-bottom: 1px solid #2c3e50;
         }
         .weekdays div {
             padding: 10px;
-            border-right: 1px solid #445566;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .weekdays div:last-child {
+            border-right: none;
         }
         .days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             background-color: #eee;
+            padding: 1px;
+            border: 1px solid #ddd;
         }
         .day {
             padding: 10px;
@@ -66,6 +74,9 @@
             border: 1px solid #ddd;
             transition: transform 0.2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
         .day:hover {
             transform: scale(1.02);
@@ -83,7 +94,7 @@
             font-size: 0.8em;
             padding: 3px 6px;
             border-radius: 3px;
-            margin-top: 5px;
+            margin-top: auto;
             display: block;
         }
         .zervi-aus {
@@ -280,11 +291,13 @@
                 const monthDiv = document.createElement('div');
                 monthDiv.className = 'month';
 
+                // Add month title
                 const monthTitle = document.createElement('div');
                 monthTitle.className = 'month-title';
                 monthTitle.textContent = new Date(2025, month, 1).toLocaleString('default', { month: 'long' });
                 monthDiv.appendChild(monthTitle);
 
+                // Add weekday headers
                 const weekdays = document.createElement('div');
                 weekdays.className = 'weekdays';
                 ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
@@ -294,18 +307,22 @@
                 });
                 monthDiv.appendChild(weekdays);
 
+                // Create days grid
                 const daysDiv = document.createElement('div');
                 daysDiv.className = 'days';
 
+                // Get first day of month and last day
                 const firstDay = new Date(2025, month, 1);
                 const lastDay = new Date(2025, month + 1, 0);
 
+                // Add empty cells for days before start of month
                 for (let i = 0; i < firstDay.getDay(); i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'day';
                     daysDiv.appendChild(emptyDay);
                 }
 
+                // Add days of month
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const dayDiv = document.createElement('div');
                     dayDiv.className = 'day';
@@ -320,6 +337,7 @@
 
                     const currentDate = `2025-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
+                    // Add Australia holidays
                     if (holidays.aus[currentDate] && document.getElementById('showAus').checked) {
                         const holiday = document.createElement('div');
                         holiday.className = 'holiday-label zervi-aus';
@@ -328,6 +346,7 @@
                         dayDiv.classList.add('holiday');
                     }
 
+                    // Add Thailand holidays
                     if (holidays.thai[currentDate] && document.getElementById('showThai').checked) {
                         const holiday = document.createElement('div');
                         holiday.className = 'holiday-label zervi-thai';
@@ -402,12 +421,18 @@
 
             holidays[company][date] = name;
             createCalendar();
+            
+            // Clear the form
+            document.getElementById('holidayDate').value = '';
+            document.getElementById('holidayName').value = '';
         }
 
+        // Event listeners
         document.getElementById('importFile').addEventListener('change', importHolidays);
         document.getElementById('showAus').addEventListener('change', createCalendar);
         document.getElementById('showThai').addEventListener('change', createCalendar);
 
+        // Initial calendar creation
         createCalendar();
     </script>
 </body>
