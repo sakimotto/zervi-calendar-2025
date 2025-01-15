@@ -300,7 +300,8 @@
 
         <div class="export-import">
             <h3>Import/Export Holidays</h3>
-            <button onclick="exportHolidays()">Export Holidays</button>
+            <button onclick="exportHolidays('json')">Export as JSON</button>
+            <button onclick="exportHolidays('csv')">Export as CSV</button>
             <input type="file" id="importFile" accept=".json" style="display: none;">
             <button onclick="document.getElementById('importFile').click()">Import Holidays</button>
         </div>
@@ -455,14 +456,49 @@
             button.textContent = showAllMonths ? 'Show Current Month' : 'Show All Months';
         }
 
-        function exportHolidays() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(holidays));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "zervi_holidays_2025.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+        function exportHolidays(format = 'json') {
+            const showAus = document.getElementById('showAus').checked;
+            const showThai = document.getElementById('showThai').checked;
+            let exportData;
+            let fileName;
+            let fileContent;
+
+            if (format === 'json') {
+                exportData = {};
+                if (showAus) exportData.aus = holidays.aus;
+                if (showThai) exportData.thai = holidays.thai;
+                fileContent = JSON.stringify(exportData, null, 2);
+                fileName = 'zervi_holidays_2025.json';
+            } else if (format === 'csv') {
+                const rows = [['Date', 'Holiday Name', 'Company']];
+                
+                if (showAus) {
+                    Object.entries(holidays.aus).forEach(([date, name]) => {
+                        rows.push([date, name, 'Zervi Australia']);
+                    });
+                }
+                
+                if (showThai) {
+                    Object.entries(holidays.thai).forEach(([date, name]) => {
+                        rows.push([date, name, 'Zervi Thailand']);
+                    });
+                }
+                
+                fileContent = rows.map(row => row.map(cell => 
+                    cell.includes(',') ? `"${cell}"` : cell
+                ).join(',')).join('\n');
+                fileName = 'zervi_holidays_2025.csv';
+            }
+
+            const blob = new Blob([fileContent], { type: format === 'json' ? 'application/json' : 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function importHolidays() {
