@@ -535,26 +535,42 @@
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="dropdown-content">
-                    <div class="sidebar-controls">
-                        <input type="date" id="eventDate" min="2025-01-01" max="2025-12-31">
-                        <input type="text" id="eventName" placeholder="Event Name">
-                        <select id="eventCompany" class="category-select">
-                            <option value="aus">Zervi Australia</option>
-                            <option value="thai">Zervi Thailand</option>
-                            <option value="both">Both Companies</option>
-                        </select>
-                        <select id="eventCategory" class="category-select">
-                            <option value="holiday">Holiday</option>
-                            <option value="trade-show">Trade Show</option>
-                            <option value="company">Company Event</option>
-                            <option value="travel">Business Travel</option>
-                            <option value="product">Product Launch</option>
-                        </select>
-                        <textarea id="eventDescription" placeholder="Event Description (optional)" rows="3"></textarea>
-                        <button onclick="addEvent()">
-                            <i class="fas fa-plus"></i>
-                            Add Event
-                        </button>
+                    <div class="modal-form">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="eventDate" min="2025-01-01" max="2025-12-31">
+                        </div>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="eventName" placeholder="Event Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Company</label>
+                            <select id="eventCompany" class="category-select">
+                                <option value="aus">Zervi Australia</option>
+                                <option value="thai">Zervi Thailand</option>
+                                <option value="both">Both Companies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="eventCategory" class="category-select">
+                                <option value="holiday">Holiday</option>
+                                <option value="trade-show">Trade Show</option>
+                                <option value="company">Company Event</option>
+                                <option value="travel">Business Travel</option>
+                                <option value="product">Product Launch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="eventDescription" placeholder="Event Description (optional)" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button onclick="addEvent()" class="action-button">
+                                <i class="fas fa-plus"></i> Add Event
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -969,20 +985,51 @@
             <div class="modal-form">
                 <input type="hidden" id="editEventIndex">
                 <input type="hidden" id="editEventCompany">
-                <input type="date" id="editEventDate" min="2025-01-01" max="2025-12-31">
-                <input type="text" id="editEventName" placeholder="Event Name">
-                <select id="editEventCategory" class="category-select">
-                    <option value="holiday">Holiday</option>
-                    <option value="trade-show">Trade Show</option>
-                    <option value="company">Company Event</option>
-                    <option value="travel">Business Travel</option>
-                    <option value="product">Product Launch</option>
-                </select>
-                <textarea id="editEventDescription" placeholder="Event Description" rows="3"></textarea>
-                <button onclick="updateEvent()">
-                    <i class="fas fa-save"></i>
-                    Update Event
-                </button>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="editEventDate" min="2025-01-01" max="2025-12-31">
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="editEventName" placeholder="Event Name">
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <select id="editEventCompanySelect" class="category-select">
+                        <option value="aus">Zervi Australia</option>
+                        <option value="thai">Zervi Thailand</option>
+                        <option value="both">Both Companies</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="editEventCategory" class="category-select">
+                        <option value="holiday">Holiday</option>
+                        <option value="trade-show">Trade Show</option>
+                        <option value="company">Company Event</option>
+                        <option value="travel">Business Travel</option>
+                        <option value="product">Product Launch</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editEventDescription" placeholder="Event Description" rows="3"></textarea>
+                </div>
+                <div class="form-group metadata">
+                    <div>
+                        <label>Created</label>
+                        <input type="text" id="editEventCreated" disabled>
+                    </div>
+                    <div>
+                        <label>Last Modified</label>
+                        <input type="text" id="editEventModified" disabled>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="updateEvent()" class="action-button">
+                        <i class="fas fa-save"></i> Update Event
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -994,8 +1041,13 @@
             // Populate form fields
             document.getElementById('editEventDate').value = event.date;
             document.getElementById('editEventName').value = event.name;
+            document.getElementById('editEventCompanySelect').value = event.company || company;
             document.getElementById('editEventCategory').value = event.category;
             document.getElementById('editEventDescription').value = event.description || '';
+            document.getElementById('editEventCreated').value = 
+                formatDateTime(event.created) || 'Not available';
+            document.getElementById('editEventModified').value = 
+                formatDateTime(event.modified) || 'Not available';
             
             // Store reference to event
             document.getElementById('editEventIndex').value = index;
@@ -1284,6 +1336,7 @@
             const updatedEvent = {
                 date: document.getElementById('editEventDate').value,
                 name: document.getElementById('editEventName').value,
+                company: document.getElementById('editEventCompanySelect').value,
                 category: document.getElementById('editEventCategory').value,
                 description: document.getElementById('editEventDescription').value,
                 created: holidays[company][index].created || new Date().toISOString(),
