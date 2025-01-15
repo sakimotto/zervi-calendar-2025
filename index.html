@@ -53,6 +53,34 @@
             top: 0;
             padding: 20px;
             border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            background-color: var(--calendar-bg);
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        .dropdown.active .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .main-content {
@@ -352,23 +380,30 @@
             </div>
         </div>
 
-        <!-- Import/Export -->
+        <!-- Data Management Dropdown -->
         <div class="sidebar-section">
-            <h3>Data Management</h3>
-            <div class="sidebar-controls">
-                <button onclick="exportHolidays('json')">
-                    <i class="fas fa-file-export"></i>
-                    Export JSON
+            <div class="dropdown">
+                <button class="dropdown-button" onclick="toggleDataManagement(event)">
+                    <span><i class="fas fa-database"></i> Data Management</span>
+                    <i class="fas fa-chevron-down"></i>
                 </button>
-                <button onclick="exportHolidays('csv')">
-                    <i class="fas fa-file-csv"></i>
-                    Export CSV
-                </button>
-                <button onclick="document.getElementById('importFile').click()">
-                    <i class="fas fa-file-import"></i>
-                    Import Holidays
-                </button>
-                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <div class="dropdown-content">
+                    <div class="sidebar-controls">
+                        <button onclick="exportHolidays('json')">
+                            <i class="fas fa-file-export"></i>
+                            Export JSON
+                        </button>
+                        <button onclick="exportHolidays('csv')">
+                            <i class="fas fa-file-csv"></i>
+                            Export CSV
+                        </button>
+                        <button onclick="document.getElementById('importFile').click()">
+                            <i class="fas fa-file-import"></i>
+                            Import Holidays
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -815,6 +850,16 @@
 
         if (upcomingHolidays.length > 0) {
             document.querySelector('.notification-badge').textContent = upcomingHolidays.length;
+        }
+    </script>
+    <script>
+        // Dropdown functionality
+        function toggleDataManagement(event) {
+            event.preventDefault();
+            const dropdown = event.currentTarget.parentElement;
+            dropdown.classList.toggle('active');
+            const icon = event.currentTarget.querySelector('.fa-chevron-down');
+            icon.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
         }
     </script>
 </body>
