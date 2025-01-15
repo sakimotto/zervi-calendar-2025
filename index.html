@@ -407,23 +407,6 @@
             </div>
         </div>
 
-        <!-- Add Holiday -->
-        <div class="sidebar-section">
-            <h3>Add Holiday</h3>
-            <div class="sidebar-controls">
-                <input type="date" id="holidayDate" min="2025-01-01" max="2025-12-31">
-                <input type="text" id="holidayName" placeholder="Holiday Name">
-                <select id="holidayCompany">
-                    <option value="aus">Zervi Australia</option>
-                    <option value="thai">Zervi Thailand</option>
-                </select>
-                <button onclick="addCustomHoliday()">
-                    <i class="fas fa-plus"></i>
-                    Add Holiday
-                </button>
-            </div>
-        </div>
-
         <!-- Event Categories Section -->
         <div class="sidebar-section">
             <h3>Event Categories</h3>
@@ -457,26 +440,34 @@
 
         <!-- Add Event Section -->
         <div class="sidebar-section">
-            <h3>Add Event</h3>
-            <div class="sidebar-controls">
-                <input type="date" id="eventDate" min="2025-01-01" max="2025-12-31">
-                <input type="text" id="eventName" placeholder="Event Name">
-                <select id="eventCompany" class="category-select">
-                    <option value="aus">Zervi Australia</option>
-                    <option value="thai">Zervi Thailand</option>
-                    <option value="both">Both Companies</option>
-                </select>
-                <select id="eventCategory" class="category-select">
-                    <option value="holiday">Holiday</option>
-                    <option value="trade-show">Trade Show</option>
-                    <option value="company">Company Event</option>
-                    <option value="travel">Business Travel</option>
-                    <option value="product">Product Launch</option>
-                </select>
-                <button onclick="addEvent()">
-                    <i class="fas fa-plus"></i>
-                    Add Event
+            <div class="dropdown">
+                <button class="dropdown-button" onclick="toggleEventForm(event)">
+                    <span><i class="fas fa-plus-circle"></i> Add New Event</span>
+                    <i class="fas fa-chevron-down"></i>
                 </button>
+                <div class="dropdown-content">
+                    <div class="sidebar-controls">
+                        <input type="date" id="eventDate" min="2025-01-01" max="2025-12-31">
+                        <input type="text" id="eventName" placeholder="Event Name">
+                        <select id="eventCompany" class="category-select">
+                            <option value="aus">Zervi Australia</option>
+                            <option value="thai">Zervi Thailand</option>
+                            <option value="both">Both Companies</option>
+                        </select>
+                        <select id="eventCategory" class="category-select">
+                            <option value="holiday">Holiday</option>
+                            <option value="trade-show">Trade Show</option>
+                            <option value="company">Company Event</option>
+                            <option value="travel">Business Travel</option>
+                            <option value="product">Product Launch</option>
+                        </select>
+                        <textarea id="eventDescription" placeholder="Event Description (optional)" rows="3"></textarea>
+                        <button onclick="addEvent()">
+                            <i class="fas fa-plus"></i>
+                            Add Event
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -753,42 +744,17 @@
             }
         }
 
-        function addCustomHoliday() {
-            const date = document.getElementById('holidayDate').value;
-            const name = document.getElementById('holidayName').value;
-            const company = document.getElementById('holidayCompany').value;
-
-            if (!date || !name) {
-                alert('Please fill in both date and holiday name');
-                return;
-            }
-
-            const event = {
-                date,
-                name,
-                category: 'holiday',
-                company
-            };
-
-            if (company === 'aus') {
-                holidays.aus.push(event);
-            } else if (company === 'thai') {
-                holidays.thai.push(event);
-            }
-            createCalendar();
-            
-            document.getElementById('holidayDate').value = '';
-            document.getElementById('holidayName').value = '';
-        }
-
         function addEvent() {
+            // Get form values
             const date = document.getElementById('eventDate').value;
             const name = document.getElementById('eventName').value;
             const company = document.getElementById('eventCompany').value;
             const category = document.getElementById('eventCategory').value;
 
+            const description = document.getElementById('eventDescription').value;
+
             if (!date || !name) {
-                alert('Please fill in all fields');
+                alert('Please fill in required fields (Date and Name)');
                 return;
             }
 
@@ -796,7 +762,8 @@
                 date,
                 name,
                 category,
-                company
+                company,
+                description
             };
 
             if (company === 'both') {
@@ -811,6 +778,11 @@
             // Clear form
             document.getElementById('eventDate').value = '';
             document.getElementById('eventName').value = '';
+            document.getElementById('eventDescription').value = '';
+
+            // Close the dropdown
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.classList.remove('active');
         }
 
         document.getElementById('importFile').addEventListener('change', importHolidays);
@@ -821,6 +793,15 @@
     </script>
 
     <script>
+        // Event form toggle
+        function toggleEventForm(event) {
+            event.preventDefault();
+            const dropdown = event.currentTarget.parentElement;
+            dropdown.classList.toggle('active');
+            const icon = event.currentTarget.querySelector('.fa-chevron-down');
+            icon.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+        }
+
         // Theme toggle functionality
         function toggleTheme() {
             const html = document.documentElement;
