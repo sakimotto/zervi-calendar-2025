@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zervi Companies Calendar 2025</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .calendar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .month {
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .month-navigation {
+            display: flex;
+            gap: 10px;
+        }
+        .month-navigation button {
+            padding: 8px 15px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .month-navigation button:hover {
+            background-color: #34495e;
+        }
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .day {
+            padding: 10px;
+            min-height: 80px;
+            background-color: white;
+            border: 1px solid #ddd;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .day:hover {
+            transform: scale(1.02);
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .today {
+            border: 2px solid #2c3e50;
+            background-color: #f8f9fa;
+        }
+        .holiday-label {
+            font-size: 0.8em;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-top: 5px;
+        }
+        .export-import {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+        input[type="text"], input[type="date"], select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        @media (max-width: 768px) {
+            .days {
+                gap: 0;
+            }
+            .day {
+                min-height: 60px;
+                font-size: 0.9em;
+            }
+            .holiday-label {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <h1>Zervi Companies Calendar 2025</h1>
+
+        <div class="controls">
+            <div class="month-navigation">
+                <button onclick="previousMonth()">Previous</button>
+                <button onclick="showAllMonths()">Show All</button>
+                <button onclick="nextMonth()">Next</button>
+            </div>
+
+            <div class="company-filter">
+                <label><input type="checkbox" checked id="showAus"> Show Zervi Australia Holidays</label>
+                <label><input type="checkbox" checked id="showThai"> Show Zervi Thailand Holidays</label>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #d4edda;"></div>
+                <span>Zervi Australia</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #cce5ff;"></div>
+                <span>Zervi Thailand</span>
+            </div>
+        </div>
+
+        <div class="export-import">
+            <h3>Import/Export Holidays</h3>
+            <button onclick="exportHolidays()">Export Holidays</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+            <button onclick="document.getElementById('importFile').click()">Import Holidays</button>
+        </div>
+
+        <div class="add-holiday">
+            <h3>Add Custom Holiday</h3>
+            <input type="date" id="holidayDate" min="2025-01-01" max="2025-12-31">
+            <input type="text" id="holidayName" placeholder="Holiday Name">
+            <select id="holidayCompany">
+                <option value="aus">Zervi Australia</option>
+                <option value="thai">Zervi Thailand</option>
+            </select>
+            <button onclick="addCustomHoliday()">Add Holiday</button>
+        </div>
+
+        <div id="calendar"></div>
+    </div>
+
+    <script>
+        const holidays = {
+            aus: {
+                '2025-01-01': "New Year's Day",
+                '2025-01-26': "Australia Day",
+                '2025-04-25': "ANZAC Day",
+                '2025-12-25': "Christmas Day",
+                '2025-12-26': "Boxing Day"
+            },
+            thai: {
+                '2025-01-01': "New Year's Day",
+                '2025-04-13': "Songkran Festival",
+                '2025-04-14': "Songkran Festival",
+                '2025-04-15': "Songkran Festival",
+                '2025-12-05': "Father's Day",
+                '2025-12-10': "Constitution Day",
+                '2025-12-31': "New Year's Eve"
+            }
+        };
+
+        let currentMonth = new Date().getMonth();
+        let showAllMonths = true;
+
+        function createCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            const months = showAllMonths ? [...Array(12).keys()] : [currentMonth];
+
+            months.forEach(month => {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month';
+
+                const monthTitle = document.createElement('div');
+                monthTitle.className = 'month-title';
+                monthTitle.textContent = new Date(2025, month, 1).toLocaleString('default', { month: 'long' });
+                monthDiv.appendChild(monthTitle);
+
+                const weekdays = document.createElement('div');
+                weekdays.className = 'weekdays';
+                ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.textContent = day;
+                    weekdays.appendChild(dayDiv);
+                });
+                monthDiv.appendChild(weekdays);
+
+                const daysDiv = document.createElement('div');
+                daysDiv.className = 'days';
+
+                const firstDay = new Date(2025, month, 1);
+                const lastDay = new Date(2025, month + 1, 0);
+
+                for (let i = 0; i < firstDay.getDay(); i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'day';
+                    daysDiv.appendChild(emptyDay);
+                }
+
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day';
+                    
+                    // Check if it's today
+                    const today = new Date();
+                    if (today.getFullYear() === 2025 && today.getMonth() === month && today.getDate() === day) {
+                        dayDiv.classList.add('today');
+                    }
+                    
+                    dayDiv.textContent = day;
+
+                    const currentDate = `2025-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                    if (holidays.aus[currentDate] && document.getElementById('showAus').checked) {
+                        const holiday = document.createElement('div');
+                        holiday.className = 'holiday-label zervi-aus';
+                        holiday.textContent = holidays.aus[currentDate];
+                        dayDiv.appendChild(holiday);
+                        dayDiv.classList.add('holiday');
+                    }
+
+                    if (holidays.thai[currentDate] && document.getElementById('showThai').checked) {
+                        const holiday = document.createElement('div');
+                        holiday.className = 'holiday-label zervi-thai';
+                        holiday.textContent = holidays.thai[currentDate];
+                        dayDiv.appendChild(holiday);
+                        dayDiv.classList.add('holiday');
+                    }
+
+                    daysDiv.appendChild(dayDiv);
+                }
+
+                monthDiv.appendChild(daysDiv);
+                calendar.appendChild(monthDiv);
+            });
+        }
+
+        function previousMonth() {
+            currentMonth = (currentMonth - 1 + 12) % 12;
+            showAllMonths = false;
+            createCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth = (currentMonth + 1) % 12;
+            showAllMonths = false;
+            createCalendar();
+        }
+
+        function showAllMonths() {
+            showAllMonths = true;
+            createCalendar();
+        }
+
+        function exportHolidays() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(holidays));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "zervi_holidays_2025.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importHolidays() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedHolidays = JSON.parse(e.target.result);
+                        Object.assign(holidays, importedHolidays);
+                        createCalendar();
+                        alert('Holidays imported successfully!');
+                    } catch (error) {
+                        alert('Error importing holidays. Please check the file format.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function addCustomHoliday() {
+            const date = document.getElementById('holidayDate').value;
+            const name = document.getElementById('holidayName').value;
+            const company = document.getElementById('holidayCompany').value;
+
+            if (!date || !name) {
+                alert('Please fill in both date and holiday name');
+                return;
+            }
+
+            holidays[company][date] = name;
+            createCalendar();
+        }
+
+        document.getElementById('importFile').addEventListener('change', importHolidays);
+        document.getElementById('showAus').addEventListener('change', createCalendar);
+        document.getElementById('showThai').addEventListener('change', createCalendar);
+
+        createCalendar();
+    </script>
+</body>
+</html>
