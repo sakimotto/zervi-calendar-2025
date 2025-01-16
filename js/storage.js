@@ -1,5 +1,5 @@
-// Calendar data
-const holidays = {
+// Load saved events from localStorage or use defaults
+const holidays = JSON.parse(localStorage.getItem('zerviCalendar2025')) || {
     thai: [
         { date: '2025-01-01', name: "New Year's Day 2025", category: 'holiday' },
         { date: '2025-01-02', name: "New Year's Day 2025", category: 'holiday' },
@@ -229,6 +229,9 @@ function addEvent() {
         holidays[company].push(event);
     }
 
+    // Save to localStorage
+    localStorage.setItem('zerviCalendar2025', JSON.stringify(holidays));
+
     createCalendar();
     
     // Clear form
@@ -282,6 +285,9 @@ function updateEvent() {
     // Update event
     holidays[company][index] = updatedEvent;
     
+    // Save to localStorage
+    localStorage.setItem('zerviCalendar2025', JSON.stringify(holidays));
+    
     // Refresh calendar
     createCalendar();
     
@@ -305,6 +311,9 @@ function deleteEvent(date, company, index) {
                 holidays[otherCompany].splice(otherIndex, 1);
             }
         }
+        
+        // Save to localStorage
+        localStorage.setItem('zerviCalendar2025', JSON.stringify(holidays));
         
         // Refresh calendar
         createCalendar();
