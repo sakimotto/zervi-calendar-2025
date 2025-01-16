@@ -375,6 +375,7 @@ function importHolidays() {
             try {
                 const importedHolidays = JSON.parse(e.target.result);
                 Object.assign(holidays, importedHolidays);
+                localStorage.setItem('zerviCalendar2025', JSON.stringify(holidays));
                 createCalendar();
                 alert('Holidays imported successfully!');
             } catch (error) {
@@ -483,6 +484,11 @@ function formatDateTime(isoString) {
 
 // Initialize calendar and event handlers
 document.addEventListener('DOMContentLoaded', function() {
+    // Load saved events from localStorage
+    const savedEvents = localStorage.getItem('zerviCalendar2025');
+    if (savedEvents) {
+        Object.assign(holidays, JSON.parse(savedEvents));
+    }
     createCalendar();
     
     // Add event listeners
