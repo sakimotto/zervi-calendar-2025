@@ -376,7 +376,126 @@ function importHolidays() {
     }
 }
 
-// Initialize calendar on page load
+// UI Functions
+function toggleEventForm(event) {
+    event.preventDefault();
+    const dropdown = event.currentTarget.parentElement;
+    dropdown.classList.toggle('active');
+    const icon = event.currentTarget.querySelector('.fa-chevron-down');
+    icon.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+}
+
+function toggleDataManagement(event) {
+    event.preventDefault();
+    const dropdown = event.currentTarget.parentElement;
+    dropdown.classList.toggle('active');
+    const icon = event.currentTarget.querySelector('.fa-chevron-down');
+    icon.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    
+    const themeIcon = document.querySelector('.theme-toggle i');
+    themeIcon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// Event Details Modal Functions
+let currentViewingEvent = null;
+
+function viewEvent(date, company, index) {
+    const event = holidays[company][index];
+    currentViewingEvent = { date, company, index };
+    
+    // Format date for display
+    const eventDate = new Date(date);
+    const formattedDate = eventDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Update modal content
+    document.getElementById('detailDate').value = event.date;
+    document.getElementById('detailName').value = event.name;
+    document.getElementById('detailCategory').value = event.category;
+    document.getElementById('detailCompany').value = event.company || company;
+    document.getElementById('detailDescription').value = event.description || '';
+    document.getElementById('detailCreated').value = formatDateTime(event.created) || 'Not available';
+    document.getElementById('detailModified').value = formatDateTime(event.modified) || 'Not available';
+    
+    // Show modal
+    document.getElementById('eventDetailsModal').classList.add('active');
+}
+
+function closeDetailsModal() {
+    document.getElementById('eventDetailsModal').classList.remove('active');
+    currentViewingEvent = null;
+}
+
+function editEventFromDetails() {
+    if (currentViewingEvent) {
+        editEvent(
+            currentViewingEvent.date,
+            currentViewingEvent.company,
+            currentViewingEvent.index
+        );
+        closeDetailsModal();
+    }
+}
+
+function deleteEventFromDetails() {
+    if (currentViewingEvent) {
+        deleteEvent(
+            currentViewingEvent.date,
+            currentViewingEvent.company,
+            currentViewingEvent.index
+        );
+        closeDetailsModal();
+    }
+}
+
+// Helper function to format date-time
+function formatDateTime(isoString) {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Initialize calendar and event handlers
 document.addEventListener('DOMContentLoaded', function() {
     createCalendar();
+    
+    // Add event listeners
+    document.getElementById('importFile').addEventListener('change', importHolidays);
+    document.getElementById('showAus').addEventListener('change', createCalendar);
+    document.getElementById('showThai').addEventListener('change', createCalendar);
+    
+    // Close modals when clicking outside
+    document.getElementById('editEventModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditModal();
+        }
+    });
+    
+    document.getElementById('eventDetailsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDetailsModal();
+        }
+    });
+    
+    // Mobile menu toggle
+    document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
 });
